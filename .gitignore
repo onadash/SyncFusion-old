@@ -1,3 +1,5 @@
-/PdfDataExtract/bin
-/PdfDataExtract/obj
-/.vs
+bin
+obj
+.vs
+Debug
+packages

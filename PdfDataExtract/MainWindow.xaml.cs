@@ -1,5 +1,6 @@
-﻿using System.Windows;
-using System.Text.RegularExpressions;
+﻿using Microsoft.Win32;
+using System.IO;
+using System.Windows;
 
 namespace PdfDataExtract
 {
@@ -8,23 +9,57 @@ namespace PdfDataExtract
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string? pdfFilePath;
+        private string? csvFilePath;
+
         public MainWindow()
         {
             InitializeComponent();
+        }
 
-            var pdfPath = @"Faktura2.pdf";
-            var csvPath = @"Dane do wyszukania.csv";
+        private void UploadPdfFile_Click(object sender, RoutedEventArgs e)
+        {
+            pdfFilePath = OpenFilePicker("PDF Files (*.pdf)|*.pdf");
+            if (pdfFilePath != null)
+                PdfFileNameText.Text = Path.GetFileName(pdfFilePath);
+        }
 
-            TextExtract textExtract = new TextExtract();
-            string pdfText = textExtract.PdfExtract(pdfPath);
-            var searchData = textExtract.CsvExtract(csvPath);
+        private void UploadCsvFile_Click(object sender, RoutedEventArgs e)
+        {
+            csvFilePath = OpenFilePicker("CSV Files (*.csv)|*.csv");
+            if (csvFilePath != null)
+                CsvFileNameText.Text = Path.GetFileName(csvFilePath);
+        }
 
-            foreach ( var dataItem in searchData )
+        private static string? OpenFilePicker(string filter)
+        {
+            OpenFileDialog openFileDialog = new()
             {
-                string searchPattern = dataItem.Item1 + "[^a-zA-Z0-9]*" + dataItem.Item2;
-                if (Regex.IsMatch(pdfText, @searchPattern))
-                    return;
+                Filter = filter
+            };
+            if (openFileDialog.ShowDialog() == true)
+            {
+                return openFileDialog.FileName;
             }
+            return null;
+        }
+
+        private void ProcessFiles_Click(object sender, RoutedEventArgs e)
+        {
+            // Check if both files have been uploaded
+            if (string.IsNullOrEmpty(pdfFilePath) || string.IsNullOrEmpty(csvFilePath))
+            {
+                ResultText.Text = "Please upload both files.";
+                return;
+            }
+
+            string pdfText = TextExtract.PdfExtract(pdfFilePath);
+            var searchData = TextExtract.CsvExtract(csvFilePath);
+
+            var containsData = DataSearch.ContainsData(pdfText, searchData);
+
+            // Display processed result
+            ResultText.Text = containsData ? "Pdf file contains searching data" : "Pdf file doesn't contain searching data";
         }
     }
 }

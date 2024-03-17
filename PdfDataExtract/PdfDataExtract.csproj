@@ -8,8 +8,10 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
-  <ItemGroup>
-	  <PackageReference Include="CsvHelper" Version="31.0.2" />
+  <ItemGroup> 
+	  <PackageReference Include="Microsoft.CodeCoverage" Version="17.9.0" /> 
+	  <PackageReference Include="MSTest.TestAdapter" Version="3.2.2" /> 
+	  <PackageReference Include="MSTest.TestFramework" Version="3.2.2" /> 
 	  <PackageReference Include="Syncfusion.EJ2.PdfViewer.AspNet.Core.Windows" Version="19.1.0.66" />
   </ItemGroup>
 
